@@ -1,29 +1,81 @@
-import Starlights from "@StarlightsTeam/Scraper"
+import { prepareWAMessageMedia, generateWAMessageFromContent, getDevice } from '@whiskeysockets/baileys';
+import yts from 'yt-search';
 
-let handler = async (m, { conn, usedPrefix, command, text }) => {
-    if (!text) return conn.reply(m.chat, '🚩 Ingresa el título de un video o canción de YouTube.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* Gemini Aaliyah - If Only`, m, rcanal)
-    await m.react('🕓')
-    try {
-    let results = await Starlights.ytsearch(text)
-    if (!results || !results.length) return conn.reply(m.chat, `No se encontraron resultados.`, m, rcanal)
-    let img = await (await fetch(`${results[0].thumbnail}`)).buffer()
-    let txt = '`乂  Y O U T U B E  -  S E A R C H`'
-    results.forEach((video, index) => {
-        txt += `\n\n`
-        txt += `	✩  *Nro* : ${index + 1}\n`
-        txt += `	✩  *Titulo* : ${video.title}\n`
-        txt += `	✩  *Duración* : ${video.duration}\n`
-        txt += `	✩  *Publicado* : ${video.published}\n`
-        txt += `	✩  *Autor* : ${video.author}\n`
-        txt += `	✩  *Url* : ${video.url}`
-    })
-await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
-await m.react('✅')
-} catch {
-await m.react('✖️')
-}}
-handler.help = ['ytsearch *<búsqueda>*']
-handler.tags = ['search']
-handler.command = ['ytsearch', 'yts']
-handler.register = true 
-export default handler
+const handler = async (m, { conn, text, usedPrefix, command, args }) => {
+    const device = await getDevice(m.key.id);
+    
+    if (!args[0]) return m.reply(`🚩 Ejemplo: *${usedPrefix + command}* Lil Peep hate my life`);
+    
+    await m.react('🕗');
+    
+    const results = await yts(text);
+    const videos = results.videos.slice(0, 30);   
+    
+    if (videos.length === 0) {
+        await m.react('❌');   
+        return m.reply(`❌ Lo siento, no encontré resultados para *${text}*. Intenta con otro término de búsqueda.`);
+    }
+    
+    await m.react('✅');
+    
+    
+    var mediaMessage = await prepareWAMessageMedia({ image: { url: 'https://qu.ax/fPmDc.jpg' } }, { upload: conn.waUploadToServer });
+
+    const interactiveMessage = {
+        body: { 
+            text: '>  Powered By Nakano',  
+        },
+        footer: { text: `${global.wm}`.trim() },  
+        header: {
+            title: `*乂  Y T  -  S E A R C H 💞*`,
+            hasMediaAttachment: true,
+            imageMessage: mediaMessage.imageMessage,
+        },
+        nativeFlowMessage: {
+            buttons: [
+                {
+                    name: 'single_select',
+                    buttonParamsJson: JSON.stringify({
+                        title: 'Seleccione un video',
+                        sections: videos.map((video) => ({
+                            title: video.title,
+                            rows: [
+                                {
+                                    header: video.title,
+                                    title: video.author.name,
+                                    description: 'Descargar MP3',
+                                    id: `${usedPrefix}ytmp3 ${video.url}`
+                                },
+                                {
+                                    header: video.title,
+                                    title: video.author.name,
+                                    description: 'Descargar MP4',
+                                    id: `${usedPrefix}ytmp4 ${video.url}`
+                                }
+                            ]
+                        }))
+                    })
+                }
+            ],
+            messageParamsJson: ''
+        }
+    };
+
+    let msg = generateWAMessageFromContent(m.chat, {
+        viewOnceMessage: {
+            message: {
+                interactiveMessage,
+            },
+        },
+    }, { userJid: conn.user.jid, quoted: m });
+    
+    conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
+};
+
+handler.help = ['ytsearch <texto>'];
+handler.tags = ['search'];
+handler.command = ['ytsearch', 'yts', 'searchyt', 'buscaryt', 'videosearch', 'audiosearch'];
+handler.register = false;
+handler.group = false;
+
+export default handler;
