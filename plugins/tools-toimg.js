@@ -10,7 +10,7 @@ let handler = async (m, { conn, usedPrefix, command, text }) => {
     await conn.sendMessage(m.chat, { image: imageBuffer }, { quoted: m });
   } catch (e) {
     console.error(e);
-    m.reply(`Ocurrió un error: ${e}`);
+    m.reply(`𝑵𝒐𝒕𝒂: ${e}`);
   }
 };
 
