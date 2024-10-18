@@ -3,29 +3,30 @@ import yts from 'yt-search';
 
 const handler = async (m, { conn, text, usedPrefix, command, args }) => {
     const device = await getDevice(m.key.id);
-    
+
     if (!args[0]) return m.reply(`🚩 Ejemplo: *${usedPrefix + command}* Lil Peep hate my life`);
     
     await m.react('🕗');
     
     const results = await yts(text);
-    const videos = results.videos.slice(0, 30);   
-    
+    const videos = results.videos.slice(0, 30);
+
     if (videos.length === 0) {
-        await m.react('❌');   
+        await m.react('❌');
         return m.reply(`❌ Lo siento, no encontré resultados para *${text}*. Intenta con otro término de búsqueda.`);
     }
-    
+
     await m.react('✅');
-    
-    
+
+  
     var mediaMessage = await prepareWAMessageMedia({ image: { url: 'https://qu.ax/fPmDc.jpg' } }, { upload: conn.waUploadToServer });
 
+    
     const interactiveMessage = {
         body: { 
-            text: '>  Powered By Nakano',  
+            text: `Resultados de: ${text}`,  
         },
-        footer: { text: `${global.wm}`.trim() },  
+        footer: { text: 'Powered by Nakano' },  
         header: {
             title: `*乂  Y T  -  S E A R C H 💞*`,
             hasMediaAttachment: true,
