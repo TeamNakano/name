@@ -1,42 +1,51 @@
-import yts from 'yt-search';
+import fetch from "node-fetch"
+import yts from 'yt-search'
 
-let handler = async (m, { conn, command, args, text, usedPrefix }) => {
+const handler = async (m, { text, usedPrefix, command, conn }) => {
+  try {
     if (!text) {
-        return conn.reply(m.chat, '*Que quieres que busque tu botsita nakano😘*', m);
+      throw m.reply("✧ Ingresa una consulta de *YouTube*");
     }
-
-    await m.react('⏳');
+  
+  try {
     let res = await yts(text);
-    let play = res.videos[0];
+    let videoList = res.all;
+    let video = videoList[Math.floor(Math.random() * videoList.length)];
 
-    if (!play) {
-        throw `Error: Vídeo no encontrado`;
+    let texto = `_*Reproduciendo  ${video.title}...*_`;
+
+    await conn.sendMessage(m?.chat, {react: {text: `🎵`, key: m?.key}});
+
+    await conn.sendMessage(m.chat, { 
+      image: { url: video.thumbnail },  
+      caption: texto 
+    }, { quoted: m });
+
+    let apiUrl = `https://endpoint.web.id/downloader/yt-audio?url=${encodeURIComponent(video.url)}&key=gojou`;
+    let result = await (await fetch(apiUrl)).json();
+
+    if (result.status && result.code === 200 && result.result && result.result.download_url) {
+      let audioUrl = result.result.download_url;
+
+      await conn.sendMessage(m.chat, { 
+        audio: { url: audioUrl }, 
+        mimetype: 'audio/mp4', 
+      }, { quoted: m });
+    } else {
+      m.reply('No se encontro una respuesta de la API.');
     }
 
-    let { title, thumbnail, ago, timestamp, views, videoId, url } = play;
+  } catch (error) {
+    console.error(error);
+    m.reply('Error interno, intenta mas tarde.');
+  }
+}
+}
+handler.help = ['play <link>']
+handler.tags = ['downloader']
+handler.command = /^(play)$/i
 
-    let txt = '```𝚈𝚘𝚞𝚃𝚞𝚋𝚎 𝙳𝚎𝚜𝚌𝚊𝚛𝚐𝚊𝚜```\n';
-    txt += '╭━─━─━─━─≪✠≫─━─━─━─━╮\n';
-    txt += `> *𝚃𝚒𝚝𝚞𝚕𝚘* : _${title}_\n`;
-    txt += `> *𝙲𝚛𝚎𝚊𝚍𝚘* : _${ago}_\n`;
-    txt += `> *𝙳𝚞𝚛𝚊𝚌𝚒𝚘𝚗* : _${timestamp}_\n`;
-    txt += `> *𝚅𝚒𝚜𝚒𝚝𝚊𝚜* : _${views.toLocaleString()}_\n`;
-    txt += `> *𝙻𝚒𝚗𝚔* : _https://www.youtube.com/watch?v=${videoId}_\n`;
-    txt += '┗─══──━══─| ✠ |─══━─═──┛ \n';
-    txt += '💞 NAKANO 💖';
+handler.premium = false
+handler.register = true
 
-    await conn.sendButton2(m.chat, txt, '. ', thumbnail, [
-        ['MP3', `${usedPrefix}ytmp3 ${url}`],
-        ['MP3DOC', `${usedPrefix}ytmp3doc ${url}`],
-        ['MP4', `${usedPrefix}ytmp4 ${url}`], 
-        ['MP4DOC', `${usedPrefix}ytmp4doc ${url}`]
-        ], null, [['Canal', 'https://whatsapp.com/channel/0029Vaj67qQJUM2Wa5Ey3y1v']], m);
-
-    await m.react('✅');
-};
-
-handler.help = ['play'];
-handler.tags = ['downloader'] 
-handler.command = ['play',];
-
-export default handler;
+export default handler
