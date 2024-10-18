@@ -21,7 +21,7 @@ const handler = async (m, { text, usedPrefix, command, conn }) => {
       caption: texto 
     }, { quoted: m });
 
-    let apiUrl = `https://endpoint.web.id/downloader/yt-audio?url=${encodeURIComponent(video.url)}&key=gojou`;
+    let apiUrl = `https://api.lolhuman.xyz/api/ytvideo2?apikey=${encodeURIComponent(video.url)}&key=gojou`;
     let result = await (await fetch(apiUrl)).json();
 
     if (result.status && result.code === 200 && result.result && result.result.download_url) {
