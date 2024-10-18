@@ -1,20 +1,42 @@
-import axios from 'axios';
-let handler = async (m, { conn, text }) => {
-if (!text) return conn.reply(m.chat, '✧ Ingresa un texto para realizar la búsqueda.', m);
-const getRandomElement = (array) => array[Math.floor(Math.random() * array.length)];
-try {
-    const { data } = await axios.get(`https://apis-starlights-team-cbb6f3a3.koyeb.app/starlight/tiktoksearch?text=${text}`);
-    const results = data.data;
-    if (!results.length) return conn.reply(m.chat, '✧ No se encontraron resultados.', m);
-    const randomResult = getRandomElement(results);
-    const videoUrl = randomResult.nowm;
-    await conn.sendFile(m.chat, videoUrl, 'tts.mp4', `❀ *TIKTOK SEARCH*\n✰ *Resultados para:*\n> ${text}`, m);
-} catch (error) {
-    console.log(error);
-}
-};
+import fetch from 'node-fetch';
+import Starlights from '@StarlightsTeam/Scraper';
 
-handler.command = ['tts', 'tiktokvid', 'ttvid'];
-handler.help = ['tiktoksearch <texto>'];
-handler.registrado = true;
+let handler = async (m, { conn, command, text, usedPrefix }) => {
+  if (!text) return conn.reply(m.chat, '🚩 Ingresa el nombre del video que deseas buscar en TikTok.', m);
+
+  await m.react('🕓');
+
+  try {
+    let results = await Starlights.tiktokSearch(text);
+    if (!results || results.length === 0) return conn.reply(m.chat, 'No se encontraron resultados', m);
+
+    let listSections = [];
+    for (let i = 0; i < (results.length >= 30 ? 30 : results.length); i++) {
+      const video = results[i];
+
+      listSections.push({
+        title: `Video Nro ${i + 1}`,
+        rows: [
+          {
+            header: '',
+            title: `${video.title}\n`,
+            description: `Autor: ${video.author}\nUrl: ${video.url}`,
+            id: `${usedPrefix}tiktok ${video.url}`
+          }
+        ]
+      });
+    }
+
+    await conn.sendList(m.chat, '*乂  T I K T O K  -  S E A R C H*', '> _Powered By Nakano Team', 'Seleccione un Video', 'https://qu.ax/fPmDc.jpg', listSections, m);
+    await m.react('✅');
+  } catch (error) {
+    console.error(error);
+    await m.react('✖️');
+  }
+}
+
+handler.tags = ['search']
+handler.help = ['tiktoksearch *<búsqueda>*']
+handler.command = ['tiktoksearch', 'tiktoks'];
+
 export default handler;
