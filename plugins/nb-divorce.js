@@ -19,6 +19,18 @@ let handler = async (m, { conn, usedPrefix }) => {
 
   let str = `${name2} y ${name} se han divorciado.`.trim();
 
+  let imgs = [
+    'https://qu.ax/ChmG.mp4', 
+    'https://qu.ax/yUBa.mp4', 
+    'https://qu.ax/OpVX.mp4'
+  ];
+  let img = imgs[Math.floor(Math.random() * imgs.length)];
+  conn.sendMessage(m.chat, { 
+    video: { url: img }, 
+    gifPlayback: true, 
+    caption: str, 
+    mentions: [m.sender] 
+  }, { quoted: m });
 
   // Actualiza estado casado
   global.db.data.users[m.sender].casado = false;
