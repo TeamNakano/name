@@ -10,7 +10,7 @@ let handler = async (m, { conn, text }) => {
         let res = apiUrl.data.data[0].url
 
         if (res) {
-            await conn.sendFile(m.chat, res, 'igdl.mp4', 'Aquí tiene', m)
+            await conn.sendFile(m.chat, res, 'igdl.mp4', '᪥𝑷𝒐𝒘𝒆𝒓𝒆𝒅 𝒃𝒚:𝑻𝒆𝒂𝒎 𝑵𝒂𝒌𝒂𝒏𝒐', m)
             await m.react('✅')
         } else {
             await m.react('✖️')
@@ -22,7 +22,7 @@ let handler = async (m, { conn, text }) => {
 
 handler.tags = ['downloader']
 handler.help = ['igdl <url>']
-handler.command = ['igdl', 'instagram', 'instagramdl']
+handler.command = ['igdl', 'instagram', 'instagramdl', 'ig']
 handler.register = true
 
 export default handler;
