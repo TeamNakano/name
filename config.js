@@ -12,7 +12,7 @@ import axios from 'axios'
 global.owner = [
   ['5493405480284', '💞 Lobo', true],
   ['5493405438423', 'NAKANO-BOT', true],
-  [''],
+  ['5219812796095', 'Oscar?!', true],
   [''],
   [''],
   [''],
