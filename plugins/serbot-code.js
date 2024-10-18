@@ -121,7 +121,7 @@ let handler = async (m, { conn: star, args, usedPrefix, command, isROwner }) => 
         if (connection == 'open') {
             conn.isInit = true
             global.conns.push(conn)
-            await star.reply(m.chat, `Conectado exitosamente con WhatsApp.\n\n*Nota:* Esta conexión de Sub-Bot aun esta en fase de prueba, por lo que puede que tenga algunos errores pero que con el tiempo se solucionaran.\n\n*Canal:*\n*-* https://whatsapp.com/channel/0029VaXDEwlC1FuFm82otA0K`, m, rcanal)
+            await star.reply(m.chat, `Conectado exitosamente con WhatsApp.\n\n*Nota:* Esta conexión de Sub-Bot es temporal si la bot no le envia code pruebe con .delsession luego code.\n\n*Canal:*\n*-* https://whatsapp.com/channel/0029VaXDEwlC1FuFm82otA0K`, m, rcanal)
 
              }
     }
