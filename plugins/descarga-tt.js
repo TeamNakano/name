@@ -1,5 +1,5 @@
 
-import axios from 'axios';
+/*import axios from 'axios';
 const baileys = (await import("@whiskeysockets/baileys")).default;
 const { proto } = baileys;
 const { generateWAMessageFromContent } = baileys;
@@ -89,4 +89,4 @@ handler.tags = ['downloader'];
 handler.command = ['tiktoksearch','tts','ttsearch'];
 handler.register = true
 
-export default handler;
+export default handler;*/
