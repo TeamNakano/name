@@ -1,3 +1,6 @@
+
+
+
 import { prepareWAMessageMedia, generateWAMessageFromContent } from '@whiskeysockets/baileys';
 import yts from 'yt-search';
 
@@ -35,7 +38,7 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
         },
         footer: { text: 'Powered by Nakano Team' },
         header: {
-            title: `*Y T  -  D E S C A R G A S* 💞`,
+            title: `*Y O U T U B E  -  P L A Y* 💞`,
             hasMediaAttachment: true,
             imageMessage: mediaMessage.imageMessage,
         },
@@ -47,7 +50,7 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
                         title: 'Selecciona una opcion',
                         sections: [
                             {
-                                title: video.title,
+                                title: `SELECCIONE EL FORMATO QUE DESEE`,
                                 rows: [
                                     {
                                         header: video.title,
