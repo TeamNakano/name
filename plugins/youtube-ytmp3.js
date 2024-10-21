@@ -1,47 +1,57 @@
-import fetch from 'node-fetch';
+import axios from 'axios';
 
-let handler = async (m, { conn, args }) => {
-    if (!args[0]) return conn.reply(m.chat, '🚩 Por favor, ingresa un enlace de YouTube.', m);
+let handler = async (m, { conn: star, text, usedPrefix, command }) => {
+    
+    if (!text) return star.reply(m.chat, `Por favor, ingresa la URL del video.\n\nEjemplo:\n${usedPrefix + command} https://youtu.be/C8mJ8943X80`, m, rcanal);
 
-    await m.react('🕗');  
+    
+    await m.react('🕗');
 
     try {
-        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}`;
-        let response = await fetch(url);
-        let json = await response.json();
+        
+        const response = await axios.get(`https://api.betabotz.eu.org/api/download/ytmp3?url=${text}&apikey=btzKiyoEditz`);
+        const res = response.data.result;
 
-        if (json.status && json.result && json.result.mp3) {
-            let { title, thumbnail, duration, views, mp3 } = json.result;
-            let mp3Url = mp3;
+        
+        var { mp3, id, title, source, duration, thumb } = res;
 
-            
-            let message = `
-*💞 Título:* ${title}
-*💞 Duración:* ${duration}
-*💞 Vistas:* ${views}
-*💞 Enlace Original:* ${json.result.url}
-            `.trim();
+        
+        let caption = `
+  Y O U T U B E  M P 3  
+ 💞 *Título:* ${title}
+ 💞 *ID:* ${id}
+ 💞 *Duración:* ${duration} segundos
+ 💞 *Enlace Original:* ${source}
+ 💞 *Calidad:* Media.
+`;
 
-            
-            await conn.sendFile(m.chat, thumbnail, 'thumbnail.jpg', message, m);
+        
+        await star.sendMessage(m.chat, {
+            image: { url: thumb },
+            caption: caption
+        }, { quoted: m });
 
-            
-            await conn.sendFile(m.chat, mp3Url, `${title}.mp3`, '', m, false, { mimetype: 'audio/mpeg' });
+        
+        await star.sendMessage(m.chat, {
+            audio: { url: mp3 },
+            mimetype: 'audio/mpeg',
+            fileName: `${title}.mp3`,
+            ptt: false 
+        }, { quoted: m });
 
-            await m.react('✅');  
-        } else {
-            await conn.reply(m.chat, '🚩 No se pudo obtener el archivo MP3.', m);
-            await m.react('❌'); 
-        }
-    } catch (error) {
-        console.error(error);
-        await conn.reply(m.chat, '🚩 Ocurrió un error al procesar tu solicitud.', m);
-        await m.react('❌'); 
+        
+        await m.react('✅');
+
+    } catch (e) {
+        
+        await m.react('❌');
+        console.error(e);
+        star.reply(m.chat, 'Hubo un error al procesar tu solicitud. Verifica que el enlace de YouTube sea válido.', m);
     }
 };
 
 handler.help = ['ytmp3'];
 handler.command = /^(ytmp3)$/i;
 handler.tags = ['downloader'];
-handler.limit = false;  
+
 export default handler;
