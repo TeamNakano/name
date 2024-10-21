@@ -18,7 +18,7 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
 
     await m.react('✅');
 
-  
+    
     var mediaMessage = await prepareWAMessageMedia({ image: { url: 'https://qu.ax/fPmDc.jpg' } }, { upload: conn.waUploadToServer });
 
     
@@ -43,15 +43,27 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
                             rows: [
                                 {
                                     header: video.title,
-                                    title: video.author.name,
-                                    description: 'Descargar MP3',
+                                    title: 'MP3',
+                                    description: 'Descargar como MP3',
                                     id: `${usedPrefix}ytmp3 ${video.url}`
                                 },
                                 {
                                     header: video.title,
-                                    title: video.author.name,
-                                    description: 'Descargar MP4',
+                                    title: 'MP3DOC',
+                                    description: 'Descargar MP3 (como documento)',
+                                    id: `${usedPrefix}ytmp3doc ${video.url}`
+                                },
+                                {
+                                    header: video.title,
+                                    title: 'MP4',
+                                    description: 'Descargar como MP4',
                                     id: `${usedPrefix}ytmp4 ${video.url}`
+                                },
+                                {
+                                    header: video.title,
+                                    title: 'MP4DOC',
+                                    description: 'Descargar MP4 (como documento)',
+                                    id: `${usedPrefix}ytmp4doc ${video.url}`
                                 }
                             ]
                         }))
@@ -62,6 +74,7 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
         }
     };
 
+    
     let msg = generateWAMessageFromContent(m.chat, {
         viewOnceMessage: {
             message: {
