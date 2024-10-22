@@ -1,50 +1,35 @@
-import fetch from 'node-fetch';
+import axios from 'axios';
 
-let handler = async (m, { conn, args }) => {
-    if (!args[0]) return conn.reply(m.chat, '🚩 Por favor, ingresa un enlace de YouTube.', m);
+let handler = async (m, { conn, command, args }) => {
+  const url = args[0];
+  if (!url) return conn.reply(m.chat, '💞 Ingresa la URL del video de YouTube junto al comando.', m);
 
-    await m.react('🕗');  
+  await m.react('🕓');
 
-    try {
-        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}`;
-        let response = await fetch(url);
-        let json = await response.json();
+  try {
+    
+    const response = await axios.get(`https://api.ryzendesu.vip/api/downloader/ytmp4?url=${encodeURIComponent(url)}`, {
+      headers: { accept: 'application/json' }
+    });
 
-        if (json.status && json.result && json.result.mp4) {
-            let { title, thumbnail, duration, views, mp4, size } = json.result;
+    const videoUrl = response.data.url;
 
-           
-            let mp4Url = mp4;  
-
-           
-            let message = `
-*💞 Título:* ${title}
-*💞 Duración:* ${duration}
-*💞 Vistas:* ${views}
-*💞 Tamaño:* ${size}
-*💞 Enlace Original:* ${json.result.url}
-*💞 Calidad:* Alta (si está disponible)
-            `.trim();
-
-            
-            await conn.sendFile(m.chat, thumbnail, 'thumbnail.jpg', message, m);
-
-            
-            await conn.sendFile(m.chat, mp4Url, `${title}.mp4`, '', m, false, { asDocument: true });
-
-            await m.react('✅');  
-        } else {
-            await conn.reply(m.chat, '🚩 No se pudo obtener el archivo de video MP4DOC.', m);
-            await m.react('❌');  
-        }
-    } catch (error) {
-        console.error(error);
-        await conn.reply(m.chat, '🚩 Ocurrió un error al procesar tu solicitud.', m);
-        await m.react('❌');  
+    if (videoUrl) {
+      
+      await conn.sendMessage(m.chat, { document: { url: videoUrl }, mimetype: 'video/mp4', fileName: 'Tome su vídeo de Youtube 💞.mp4' }, { quoted: m });
+      await m.react('✅');
+    } else {
+      conn.reply(m.chat, '❌ No se encontró el enlace de descarga del video.', m);
     }
+  } catch (error) {
+    console.error(error);
+    conn.reply(m.chat, '❌ Hubo un error al realizar la descarga. Por favor, intenta de nuevo.', m);
+  }
 };
 
-handler.help = ['ytmp4doc'];
-handler.command = /^(ytmp4doc)$/i;
-handler.tags = ['downloader'];  
+handler.help = ['ytmp4doc *<url>*'];
+handler.tags = ['download'];
+handler.command = /^ytmp4doc$/i;
+handler.register = false;
+
 export default handler;
