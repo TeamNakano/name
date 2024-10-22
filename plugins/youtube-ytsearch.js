@@ -24,7 +24,7 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
     
     const interactiveMessage = {
         body: { 
-            text: `Resultados de: ${text}`,  
+            text: `Resultados de: *${text}*`,  
         },
         footer: { text: 'Powered by Nakano' },  
         header: {
