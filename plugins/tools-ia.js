@@ -1,19 +1,35 @@
-import fetch from 'node-fetch';
+import axios from 'axios';
 
-const handler = async (m, { conn, text }) => {
-if (!text) return conn.reply(m.chat, 'Escribe un texto para hablar con koruda', m);
+let handler = async (m, { conn, command, args }) => {
+  const query = args.join(' ');
+  if (!query) return conn.reply(m.chat, '🚩 Ingresa una pregunta o texto para la IA.', m);
 
-try {
-let msg = await conn.sendMessage(m.chat, {text: '*koruda esta escribiendo.....*'});
+  await m.react('💬');
 
-let userid = conn.getName(m.sender) || 'default';
-let apiurl = `https://api.guruapi.tech/ai/gpt4?username=${userid}&query=hii${encodeURIComponent(text)}`;
-let result = await fetch(apiurl);
-let response = await result.json();
+  try {
+    
+    const response = await axios.get(`https://api.ryzendesu.vip/api/ai/chatgpt?text=${encodeURIComponent(query)}`, {
+      headers: { accept: 'application/json' }
+    });
 
-await conn.relayMessage(m.chat, { protocolMessage: { key: msg.key, type: 14, editedMessage: { conversation: response.msg }}}, {});
-} catch {}}
+    const aiResponse = response.data.response;
 
-handler.command = handler.help = ["chatgpt", "Ia"];
+    if (aiResponse) {
+      
+      await conn.reply(m.chat, aiResponse, m, rcanal);
+      await m.react('✅');
+    } else {
+      conn.reply(m.chat, '❌ No se recibió respuesta de la IA.', m);
+    }
+  } catch (error) {
+    console.error(error);
+    conn.reply(m.chat, '❌ Hubo un error al comunicarse con la IA. Intenta de nuevo más tarde.', m);
+  }
+};
 
-export default handler
+handler.help = ['ai *<texto>*', 'ia *<texto>*'];
+handler.tags = ['ai'];
+handler.command = /^(ai|ia)$/i;  
+handler.register = false;
+
+export default handler;
