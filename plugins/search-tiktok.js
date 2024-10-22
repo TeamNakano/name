@@ -27,7 +27,8 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
       });
     }
 
-    await conn.sendList(m.chat, '*乂  T I K T O K  -  S E A R C H*', '> _Powered By Nakano Team', 'Seleccione un Video', 'https://qu.ax/fPmDc.jpg', listSections, m);
+    
+    await conn.sendList(m.chat, `*💞  T I K T O K  -  S E A R C H*`, `Resultados de: *${text}*`, 'Seleccione un Video', 'https://qu.ax/fPmDc.jpg', listSections, m);
     await m.react('✅');
   } catch (error) {
     console.error(error);
