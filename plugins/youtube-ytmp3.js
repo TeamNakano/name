@@ -1,57 +1,35 @@
 import axios from 'axios';
 
-let handler = async (m, { conn: star, text, usedPrefix, command }) => {
+let handler = async (m, { conn, command, args }) => {
+  const url = args[0];
+  if (!url) return conn.reply(m.chat, '💞 Ingresa la URL del video de YouTube junto al comando.', m);
+  
+  await m.react('🕓');
+
+  try {
     
-    if (!text) return star.reply(m.chat, `Por favor, ingresa la URL del video.\n\nEjemplo:\n${usedPrefix + command} https://youtu.be/C8mJ8943X80`, m, rcanal);
+    const response = await axios.get(`https://api.ryzendesu.vip/api/downloader/ytmp3?url=${encodeURIComponent(url)}`, {
+      headers: { accept: 'application/json' }
+    });
 
-    
-    await m.react('🕗');
+    const audioUrl = response.data.url;
 
-    try {
-        
-        const response = await axios.get(`https://api.betabotz.eu.org/api/download/ytmp3?url=${text}&apikey=btzKiyoEditz`);
-        const res = response.data.result;
-
-        
-        var { mp3, id, title, source, duration, thumb } = res;
-
-        
-        let caption = `
-  Y O U T U B E  M P 3  
- 💞 *Título:* ${title}
- 💞 *ID:* ${id}
- 💞 *Duración:* ${duration} segundos
- 💞 *Enlace Original:* ${source}
- 💞 *Calidad:* Media.
-`;
-
-        
-        await star.sendMessage(m.chat, {
-            image: { url: thumb },
-            caption: caption
-        }, { quoted: m });
-
-        
-        await star.sendMessage(m.chat, {
-            audio: { url: mp3 },
-            mimetype: 'audio/mpeg',
-            fileName: `${title}.mp3`,
-            ptt: false 
-        }, { quoted: m });
-
-        
-        await m.react('✅');
-
-    } catch (e) {
-        
-        await m.react('❌');
-        console.error(e);
-        star.reply(m.chat, 'Hubo un error al procesar tu solicitud. Verifica que el enlace de YouTube sea válido.', m);
+    if (audioUrl) {
+      
+      await conn.sendMessage(m.chat, { audio: { url: audioUrl }, mimetype: 'audio/mpeg' }, { quoted: m });
+      await m.react('✅');
+    } else {
+      conn.reply(m.chat, '❌ No se encontró el enlace de descarga del audio.', m);
     }
-};
+  } catch (error) {
+    console.error(error);
+    conn.reply(m.chat, '❌ Hubo un error al realizar la descarga. Por favor, intenta de nuevo.', m);
+  }
+}
 
-handler.help = ['ytmp3'];
-handler.command = /^(ytmp3)$/i;
-handler.tags = ['downloader'];
+handler.help = ['ytmp3 *<url>*'];
+handler.tags = ['download'];
+handler.command = /^ytmp3$/i;
+handler.register = false;
 
 export default handler;
