@@ -1,35 +1,34 @@
 import axios from 'axios';
 
-let handler = async (m, { conn, command, args }) => {
-  const url = args[0];
-  if (!url) return conn.reply(m.chat, '💞 Ingresa la URL del video de YouTube junto al comando.', m);
-  
-  await m.react('🕓');
+let handler = async (m, { conn: star, text, usedPrefix, command }) => {
+    if (!text) return star.reply(m.chat, `Ingresa la URL del video de YouTube.\n\nEjemplo:\n${usedPrefix + command} https://youtu.be/4rDOsvzTicY?si=3Ps-SJyRGzMa83QT`, m);
 
-  try {
+    await m.react('🕗'); 
     
-    const response = await axios.get(`https://api.ryzendesu.vip/api/downloader/ytmp3?url=${encodeURIComponent(url)}`, {
-      headers: { accept: 'application/json' }
-    });
+    try {
+        const response = await axios.get(`https://api.betabotz.eu.org/api/download/ytmp3?url=${text}&apikey=btzKiyoEditz`);
+        const res = response.data.result;
+        var { mp3, title } = res;
 
-    const audioUrl = response.data.url;
+        
+        await star.sendMessage(m.chat, {
+            document: { url: mp3 },
+            mimetype: 'audio/mpeg',
+            fileName: `${title}.mp3`
+        }, { quoted: m });
 
-    if (audioUrl) {
-      
-      await conn.sendMessage(m.chat, { document: { url: audioUrl }, mimetype: 'audio/mpeg', fileName: 'Tome su audio de Youtube 💞.mp3' }, { quoted: m });
-      await m.react('✅');
-    } else {
-      conn.reply(m.chat, '❌ No se encontró el enlace de descarga del audio.', m);
+        await m.react('✅'); 
+
+    } catch (e) {
+        await m.react('❌'); 
+        star.reply(m.chat, 'Hubo un error al procesar tu solicitud. Verifica que el enlace de YouTube sea válido.', m);
+        console.log(e);
     }
-  } catch (error) {
-    console.error(error);
-    conn.reply(m.chat, '❌ Hubo un error al realizar la descarga. Por favor, intenta de nuevo.', m);
-  }
-}
+};
 
-handler.help = ['ytmp3doc *<url>*'];
-handler.tags = ['download'];
-handler.command = /^ytmp3doc$/i;
-handler.register = false;
+handler.help = ['ytmp3doc'];
+handler.command = /^(ytmp3doc)$/i;
+handler.tags = ['downloader'];
+handler.limit = false;
 
 export default handler;
