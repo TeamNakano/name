@@ -8,15 +8,15 @@ let handler = async (m, { conn, command, args }) => {
 
   try {
     
-    const response = await axios.get(`https://api.ryzendesu.vip/api/ai/chatgpt?text=${encodeURIComponent(query)}`, {
+    const response = await axios.get(`https://widipe.com/gpt4?text=${encodeURIComponent(query)}`, {
       headers: { accept: 'application/json' }
     });
 
-    const aiResponse = response.data.response;
+    const aiResponse = response.data.result;
 
     if (aiResponse) {
       
-      await conn.reply(m.chat, aiResponse, m, rcanal);
+      await conn.reply(m.chat, aiResponse, m);
       await m.react('✅');
     } else {
       conn.reply(m.chat, '❌ No se recibió respuesta de la IA.', m);
