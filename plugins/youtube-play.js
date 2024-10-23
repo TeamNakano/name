@@ -1,6 +1,5 @@
 
 
-
 import { prepareWAMessageMedia, generateWAMessageFromContent } from '@whiskeysockets/baileys';
 import yts from 'yt-search';
 
@@ -61,7 +60,7 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
                                     {
                                         header: video.title,
                                         title: 'MP3DOC',
-                                        description: `Descargar MP3DOC`,
+                                        description: `Descargar MP3DOC (como documento)`,
                                         id: `${usedPrefix}ytmp3doc ${video.url}`
                                     },
                                     {
@@ -73,7 +72,7 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
                                     {
                                         header: video.title,
                                         title: 'MP4DOC',
-                                        description: `Descargar MP4DOC`,
+                                        description: `Descargar MP4DOC (como documento)`,
                                         id: `${usedPrefix}ytmp4doc ${video.url}`
                                     }
                                 ]
