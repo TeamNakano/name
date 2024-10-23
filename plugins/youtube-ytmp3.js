@@ -6,7 +6,7 @@ let handler = async (m, { conn, args }) => {
     await m.react('🕗');
 
     try {
-        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}&type=mp3`; // Aseguramos que sea mp3
+        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}&type=mp3`; 
         let response = await fetch(url);
         let json = await response.json();
 
