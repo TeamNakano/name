@@ -1,35 +1,39 @@
-import axios from 'axios';
+import fetch from 'node-fetch';
 
-let handler = async (m, { conn, command, args }) => {
-  const url = args[0];
-  if (!url) return conn.reply(m.chat, '🚩 Ingresa la URL del video de YouTube junto al comando.', m);
-  
-  await m.react('🕓');
+let handler = async (m, { conn, args }) => {
+    if (!args[0]) return conn.reply(m.chat, '🚩 Por favor, ingresa un enlace de YouTube.', m);
 
-  try {
-    
-    const response = await axios.get(`https://api.ryzendesu.vip/api/downloader/ytmp3?url=${encodeURIComponent(url)}`, {
-      headers: { accept: 'application/json' }
-    });
+    await m.react('🕗');
 
-    const audioUrl = response.data.url;
+    try {
+        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}&type=mp3`; 
+        let response = await fetch(url);
+        let json = await response.json();
 
-    if (audioUrl) {
-      // Enviar el archivo MP3 como documento
-      await conn.sendMessage(m.chat, { document: { url: audioUrl }, mimetype: 'audio/mpeg', fileName: 'audio.mp3' }, { quoted: m });
-      await m.react('✅');
-    } else {
-      conn.reply(m.chat, '❌ No se encontró el enlace de descarga del audio.', m);
+        if (json.status && json.result && json.result.mp3) {
+            let { title, mp3 } = json.result;
+
+            
+            await conn.sendMessage(m.chat, {
+                audio: { url: mp3 },
+                mimetype: 'audio/mpeg',
+                fileName: `${title}.mp3`
+            }, { quoted: m });
+
+            await m.react('✅');
+        } else {
+            await conn.reply(m.chat, '🚩 No se pudo obtener el archivo de audio MP3.', m);
+            await m.react('❌');
+        }
+    } catch (error) {
+        console.error(error);
+        await conn.reply(m.chat, '🚩 Ocurrió un error al procesar tu solicitud.', m);
+        await m.react('❌');
     }
-  } catch (error) {
-    console.error(error);
-    conn.reply(m.chat, '❌ Hubo un error al realizar la descarga. Por favor, intenta de nuevo.', m);
-  }
-}
+};
 
-handler.help = ['ytmp3 *<url>*'];
-handler.tags = ['download'];
-handler.command = /^ytmp3$/i;
-handler.register = true;
+handler.help = ['ytmp3'];
+handler.command = /^(ytmp3)$/i;
+handler.tags = ['downloader'];
 
 export default handler;
