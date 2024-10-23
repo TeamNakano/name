@@ -6,16 +6,18 @@ let handler = async (m, { conn, args }) => {
     await m.react('🕗');
 
     try {
-        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}&type=mp3`; 
+        
+        let url = `https://api.ryzendesu.vip/api/downloader/y2mate?url=${encodeURIComponent(args[0])}`;
         let response = await fetch(url);
         let json = await response.json();
 
-        if (json.status && json.result && json.result.mp3) {
-            let { title, mp3 } = json.result;
+        
+        if (json.type === "download" && json.download && json.download.dl.mp3) {
+            let { title } = json.download;
+            let mp3Url = json.download.dl.mp3['128kbps'].url; 
 
-            
             await conn.sendMessage(m.chat, {
-                audio: { url: mp3 },
+                audio: { url: mp3Url },
                 mimetype: 'audio/mpeg',
                 fileName: `${title}.mp3`
             }, { quoted: m });
