@@ -14,7 +14,8 @@ let handler = async (m, { conn: star, text, usedPrefix, command }) => {
         await star.sendMessage(m.chat, {
             video: { url: mp4 },
             mimetype: 'video/mp4',
-            fileName: `${title}.mp4`
+            fileName: `${title}.mp4`,
+            caption: `💬 *Título del Video:* ${title}`
         }, { quoted: m });
 
         await m.react('✅'); 
