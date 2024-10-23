@@ -1,4 +1,3 @@
-
 import fetch from 'node-fetch';
 
 let handler = async (m, { conn, args }) => {
@@ -15,7 +14,7 @@ let handler = async (m, { conn, args }) => {
             let { title, mp4 } = json.result;
 
             
-            await conn.sendFile(m.chat, mp4, `video.mp4`, '', m, false, { asDocument: true });
+            await conn.sendFile(m.chat, mp4, `${title}.mp4`, '', m, false, { asDocument: true });
 
             await m.react('✅');
         } else {
