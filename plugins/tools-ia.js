@@ -16,7 +16,7 @@ let handler = async (m, { conn, command, args }) => {
 
     if (aiResponse) {
       
-      await conn.reply(m.chat, aiResponse, m);
+      await conn.reply(m.chat, aiResponse, m, rcanal);
       await m.react('✅');
     } else {
       conn.reply(m.chat, '❌ No se recibió respuesta de la IA.', m);
