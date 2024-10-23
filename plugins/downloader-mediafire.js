@@ -6,7 +6,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     await m.react('🕗');
 
     try {
-        // Realiza la solicitud a la API de MediaFire
+        
         const response = await axios.get(`https://deliriussapi-oficial.vercel.app/download/mediafire?url=${encodeURIComponent(text)}`, {
             headers: { accept: 'application/json' }
         });
@@ -17,13 +17,13 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
             return conn.reply(m.chat, 'No se encontraron archivos en la carpeta de MediaFire.', m);
         }
 
-        // Genera un mensaje con los archivos disponibles
+        
         let message = `📁 *Carpeta MediaFire*: ${folder}\n\nArchivos disponibles:\n\n`;
         for (let file of data) {
             message += `🔹 *${file.filename}* (${file.size})\n➡️ [Descargar](${file.link})\n\n`;
         }
 
-        // Envía el mensaje con los enlaces de descarga
+        
         await conn.reply(m.chat, message, m);
         await m.react('✅');
 
