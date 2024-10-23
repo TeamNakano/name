@@ -1,25 +1,35 @@
-//Power by Starlight Team
+import axios from 'axios';
 
-import Starlights from '@StarlightsTeam/Scraper'
-import fetch from 'node-fetch' 
-let limit = 100
+let handler = async (m, { conn, command, args }) => {
+  const url = args[0];
+  if (!url) return conn.reply(m.chat, '🚩 Ingresa la URL del video de YouTube junto al comando.', m);
+  
+  await m.react('🕓');
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-    if (!args[0]) return conn.reply(m.chat, '[ ✰ ] Ingresa el enlace del vídeo de *YouTube* junto al comando.', m)
+  try {
+    
+    const response = await axios.get(`https://api.ryzendesu.vip/api/downloader/ytmp3?url=${encodeURIComponent(url)}`, {
+      headers: { accept: 'application/json' }
+    });
 
-    await m.react('🕓')
-    try {
-        let { dl_url } = await Starlights.ytmp3v2(args[0])
-        await conn.sendMessage(m.chat, { audio: { url: dl_url }, fileName: 'audio.mp3', mimetype: 'audio/mp4' }, { quoted: m })
-        await m.react('✅')
-    } catch {
-        await m.react('✖️')
+    const audioUrl = response.data.url;
+
+    if (audioUrl) {
+      
+      await conn.sendMessage(m.chat, { audio: { url: audioUrl }, mimetype: 'audio/mpeg' }, { quoted: m });
+      await m.react('✅');
+    } else {
+      conn.reply(m.chat, '❌ No se encontró el enlace de descarga del audio.', m);
     }
+  } catch (error) {
+    console.error(error);
+    conn.reply(m.chat, '❌ Hubo un error al realizar la descarga. Por favor, intenta de nuevo.', m);
+  }
 }
 
-handler.help = ['ytmp3 *<link yt>*']
-handler.tags = ['downloader']
-handler.command = ['ytmp3', 'yta', 'fgmp3']
-handler.register = false
+handler.help = ['ytmp3 *<url>*'];
+handler.tags = ['download'];
+handler.command = /^ytmp3$/i;
+handler.register = false;
 
-export default handler
+export default handler;
