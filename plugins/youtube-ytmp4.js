@@ -1,35 +1,34 @@
 import axios from 'axios';
 
-let handler = async (m, { conn, command, args }) => {
-  const url = args[0];
-  if (!url) return conn.reply(m.chat, '💬 Ingresa la URL del video de YouTube junto al comando.', m);
-  
-  await m.react('🕓');
+let handler = async (m, { conn: star, text, usedPrefix, command }) => {
+    if (!text) return star.reply(m.chat, `Ingresa la URL del video de YouTube.\n\nEjemplo:\n${usedPrefix + command} https://youtu.be/4rDOsvzTicY?si=3Ps-SJyRGzMa83QT`, m);
 
-  try {
+    await m.react('🕗'); 
     
-    const response = await axios.get(`https://api.ryzendesu.vip/api/downloader/ytmp4?url=${encodeURIComponent(url)}`, {
-      headers: { accept: 'application/json' }
-    });
+    try {
+        const response = await axios.get(`https://api.betabotz.eu.org/api/download/ytmp4?url=${text}&apikey=btzKiyoEditz`);
+        const res = response.data.result;
+        var { mp4, title } = res;
 
-    const videoUrl = response.data.url;
+        
+        await star.sendMessage(m.chat, {
+            video: { url: mp4 },
+            mimetype: 'video/mp4',
+            fileName: `${title}.mp4`
+        }, { quoted: m });
 
-    if (videoUrl) {
-      
-      await conn.sendMessage(m.chat, { video: { url: videoUrl }, mimetype: 'video/mp4' }, { quoted: m });
-      await m.react('✅');
-    } else {
-      conn.reply(m.chat, '❌ No se encontró el enlace de descarga del video.', m);
+        await m.react('✅'); 
+
+    } catch (e) {
+        await m.react('❌'); 
+        star.reply(m.chat, 'Hubo un error al procesar tu solicitud. Verifica que el enlace de YouTube sea válido.', m);
+        console.log(e);
     }
-  } catch (error) {
-    console.error(error);
-    conn.reply(m.chat, '❌ Hubo un error al realizar la descarga. Puede que el vídeo sea muy pesado intente con . ytmp4doc.', m, rcanal);
-  }
-}
+};
 
-handler.help = ['ytmp4 *<url>*'];
-handler.tags = ['download'];
-handler.command = /^ytmp4$/i;
-handler.register = false;
+handler.help = ['ytmp4'];
+handler.command = /^(ytmp4)$/i;
+handler.tags = ['downloader'];
+handler.limit = false;
 
 export default handler;
