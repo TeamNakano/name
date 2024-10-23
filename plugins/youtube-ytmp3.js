@@ -8,22 +8,7 @@ let handler = async (m, { conn: star, text, usedPrefix, command }) => {
     try {
         const response = await axios.get(`https://api.betabotz.eu.org/api/download/ytmp3?url=${text}&apikey=btzKiyoEditz`);
         const res = response.data.result;
-        var { mp3, id, title, source, duration, thumb } = res;
-
-        let caption = `
-Y O U T U B E - M P 3
-💞 *Título:* ${title}
-💞 *ID:* ${id}
-💞 *Duración:* ${duration}
-💞 *Enlace:* ${source}
-💞 *Calificación:* Desconocido
-`;
-
-        
-        await star.sendMessage(m.chat, {
-            image: { url: thumb },
-            caption: caption
-        }, { quoted: m });
+        var { mp3, title } = res;
 
         
         await star.sendMessage(m.chat, {
