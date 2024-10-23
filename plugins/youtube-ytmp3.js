@@ -1,39 +1,25 @@
+//Power by Starlight Team
 
+import Starlights from '@StarlightsTeam/Scraper'
+import fetch from 'node-fetch' 
+let limit = 100
 
+let handler = async (m, { conn, args, usedPrefix, command }) => {
+    if (!args[0]) return conn.reply(m.chat, '[ ✰ ] Ingresa el enlace del vídeo de *YouTube* junto al comando.', m)
 
-
-
-import axios from 'axios';
-
-let handler = async (m, { conn: star, text, usedPrefix, command }) => {
-    if (!text) return star.reply(m.chat, `Ingresa la URL del video de YouTube.\n\nEjemplo:\n${usedPrefix + command} https://youtu.be/4rDOsvzTicY?si=3Ps-SJyRGzMa83QT`, m);
-
-    await m.react('🕗'); 
-    
+    await m.react('🕓')
     try {
-        const response = await axios.get(`https://api.betabotz.eu.org/api/download/ytmp3?url=${text}&apikey=btzKiyoEditz`);
-        const res = response.data.result;
-        var { mp3, title } = res;
-
-        
-        await star.sendMessage(m.chat, {
-            audio: { url: mp3 },
-            mimetype: 'audio/mpeg',
-            fileName: `${title}.mp3`
-        }, { quoted: m });
-
-        await m.react('✅'); 
-
-    } catch (e) {
-        await m.react('❌'); 
-        star.reply(m.chat, 'Hubo un error al procesar tu solicitud. Verifica que el enlace de YouTube sea válido.', m);
-        console.log(e);
+        let { dl_url } = await Starlights.ytmp3v2(args[0])
+        await conn.sendMessage(m.chat, { audio: { url: dl_url }, fileName: 'audio.mp3', mimetype: 'audio/mp4' }, { quoted: m })
+        await m.react('✅')
+    } catch {
+        await m.react('✖️')
     }
-};
+}
 
-handler.help = ['ytmp3'];
-handler.command = /^(ytmp3)$/i;
-handler.tags = ['downloader'];
-handler.limit = false;
+handler.help = ['ytmp3 *<link yt>*']
+handler.tags = ['downloader']
+handler.command = ['ytmp3', 'yta', 'fgmp3']
+handler.register = false
 
-export default handler;
+export default handler
