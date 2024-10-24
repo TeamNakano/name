@@ -1,35 +1,36 @@
-import axios from 'axios';
+import fetch from 'node-fetch';
 
-let handler = async (m, { conn: star, text, usedPrefix, command }) => {
-    if (!text) return star.reply(m.chat, `Ingresa la URL del video de YouTube.\n\nEjemplo:\n${usedPrefix + command} https://youtu.be/4rDOsvzTicY?si=3Ps-SJyRGzMa83QT`, m);
+let handler = async (m, { conn, args }) => {
+    if (!args[0]) return conn.reply(m.chat, '🚩 Por favor, ingresa un enlace de YouTube.', m);
 
-    await m.react('🕗'); 
-    
+    await m.react('🕗');
+
     try {
-        const response = await axios.get(`https://api.betabotz.eu.org/api/download/ytmp4?url=${text}&apikey=btzKiyoEditz`);
-        const res = response.data.result;
-        var { mp4, title } = res;
+        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}`;
+        let response = await fetch(url);
+        let json = await response.json();
 
         
-        await star.sendMessage(m.chat, {
-            video: { url: mp4 },
-            mimetype: 'video/mp4',
-            fileName: `${title}.mp4`,
-            caption: `💬 *Título del Video:* ${title}`
-        }, { quoted: m });
+        if (json.status && json.result && json.result.mp4) {
+            let { title, mp4 } = json.result;
 
-        await m.react('✅'); 
+            
+            await conn.sendFile(m.chat, mp4, `${title}.mp4`, '', m);
 
-    } catch (e) {
-        await m.react('❌'); 
-        star.reply(m.chat, 'Hubo un error al procesar tu solicitud. Verifica que el enlace de YouTube sea válido.', m);
-        console.log(e);
+            await m.react('✅');
+        } else {
+            await conn.reply(m.chat, '🚩 No se pudo obtener el archivo de video.', m);
+            await m.react('❌');
+        }
+    } catch (error) {
+        console.error(error);
+        await conn.reply(m.chat, '🚩 Ocurrió un error al procesar tu solicitud.', m);
+        await m.react('❌');
     }
 };
 
-handler.help = ['ytmp4'];
-handler.command = /^(ytmp4)$/i;
+handler.help = ['ytmp4 <link>'];
+handler.command = /^(ytmp4)$/i; 
 handler.tags = ['downloader'];
-handler.limit = false;
 
 export default handler;
