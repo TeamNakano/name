@@ -18,7 +18,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
                            `*» Artista* : ${firstTrack.artists}\n` +
                            `*» Duración* : ${firstTrack.duration}\n\n`;
 
-    // Preparar lista de resultados
+    
     let listSections = [];
     for (let i = 0; i < (results.length >= 30 ? 30 : results.length); i++) {
       const track = results[i];
@@ -36,11 +36,11 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
       });
     }
 
-    // Enviar lista de resultados junto con la información del primer resultado
+    
     await conn.sendList(
       m.chat,
       ' *A P P L E  M U S I C  -  S E A R C H* 💬',
-      firstTrackInfo, // Información del primer resultado aquí
+      firstTrackInfo, 
       'Seleccione una Canción',
       'https://qu.ax/fPmDc.jpg',
       listSections,
@@ -55,7 +55,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
 
 handler.help = ['applemusicsearch *<búsqueda>*'];
 handler.tags = ['search'];
-handler.command = ['applemusicsearch', 'applemusic']; // Puedes añadir más comandos si lo deseas
+handler.command = ['applemusicsearch', 'applemusic']; 
 handler.register = true;
 
 export default handler;
