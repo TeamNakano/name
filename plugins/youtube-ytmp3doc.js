@@ -1,34 +1,37 @@
-import axios from 'axios';
+import fetch from 'node-fetch';
 
-let handler = async (m, { conn: star, text, usedPrefix, command }) => {
-    if (!text) return star.reply(m.chat, `Ingresa la URL del video de YouTube.\n\nEjemplo:\n${usedPrefix + command} https://youtu.be/4rDOsvzTicY?si=3Ps-SJyRGzMa83QT`, m);
+let handler = async (m, { conn, args }) => {
+    if (!args[0]) return conn.reply(m.chat, '🚩 Por favor, ingresa un enlace de YouTube.', m);
 
-    await m.react('🕗'); 
-    
+    await m.react('🕗');
+
     try {
-        const response = await axios.get(`https://api.betabotz.eu.org/api/download/ytmp3?url=${text}&apikey=btzKiyoEditz`);
-        const res = response.data.result;
-        var { mp3, title } = res;
+        
+        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}`;
+        let response = await fetch(url);
+        let json = await response.json();
 
         
-        await star.sendMessage(m.chat, {
-            document: { url: mp3 },
-            mimetype: 'audio/mpeg',
-            fileName: `${title}.mp3`
-        }, { quoted: m });
+        if (json.status && json.result && json.result.mp3) {
+            let { title, mp3 } = json.result;
 
-        await m.react('✅'); 
+            
+            await conn.sendFile(m.chat, mp3, `${title}.mp3`, '', m, false, { asDocument: true });
 
-    } catch (e) {
-        await m.react('❌'); 
-        star.reply(m.chat, 'Hubo un error al procesar tu solicitud. Verifica que el enlace de YouTube sea válido.', m);
-        console.log(e);
+            await m.react('✅');
+        } else {
+            await conn.reply(m.chat, '🚩 No se pudo obtener el archivo de audio.', m);
+            await m.react('❌');
+        }
+    } catch (error) {
+        console.error(error);
+        await conn.reply(m.chat, '🚩 Ocurrió un error al procesar tu solicitud.', m);
+        await m.react('❌');
     }
 };
 
-handler.help = ['ytmp3doc'];
-handler.command = /^(ytmp3doc)$/i;
+handler.help = ['ytmp3 <link>'];
+handler.command = /^(ytmp3)$/i;
 handler.tags = ['downloader'];
-handler.limit = false;
 
 export default handler;
