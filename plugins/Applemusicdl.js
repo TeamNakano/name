@@ -18,10 +18,10 @@ let handler = async (m, { conn, command, text }) => {
     message += `*» Artista* : ${track.artists}\n`;
     message += `*» Duración* : ${track.duration}\n\n`;
 
-    // Enviar primero la imagen con la información
+    
     await conn.sendFile(m.chat, track.image, 'cover.jpg', message, m);
 
-    // Descargar y enviar el archivo de audio
+    
     let audioResponse = await fetch(track.download);
     let audioBuffer = await audioResponse.buffer();
 
