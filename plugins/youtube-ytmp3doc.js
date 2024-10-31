@@ -1,37 +1,57 @@
-import fetch from 'node-fetch';
+import yts from 'yt-search';
+import fetch from "node-fetch";
 
-let handler = async (m, { conn, args }) => {
-    if (!args[0]) return conn.reply(m.chat, '🚩 Por favor, ingresa un enlace de YouTube.', m);
+const handler = async (m, { text, usedPrefix, command, conn }) => {
+    if (!text) {
+        throw await m.reply("✨ Ingresa una consulta o link de *YouTube*");
+    }
+    await m.react('🕓');
 
-    await m.react('🕗');
+    let res = await yts(text);
+    let videoList = res.all;
+    let videos = videoList[0];
 
-    try {
-        
-        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}`;
-        let response = await fetch(url);
-        let json = await response.json();
+    async function ytdl(url) {
+        const response = await fetch('https://shinoa.us.kg/api/download/ytdl', {
+            method: 'POST',
+            headers: {
+                'accept': '*/*',
+                'api_key': 'free',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: url
+            })
+        });
 
-        
-        if (json.status && json.result && json.result.mp3) {
-            let { title, mp3 } = json.result;
-
-            
-            await conn.sendFile(m.chat, mp3, `${title}.mp3`, '', m, false, { asDocument: true });
-
-            await m.react('✅');
-        } else {
-            await conn.reply(m.chat, '🚩 No se pudo obtener el archivo de audio.', m);
-            await m.react('❌');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    } catch (error) {
-        console.error(error);
-        await conn.reply(m.chat, '🚩 Ocurrió un error al procesar tu solicitud.', m);
-        await m.react('❌');
+
+        const data = await response.json();
+        return data;
+    }
+
+    let data_play = await ytdl(videos.url);
+    console.log(data_play);
+
+    if (data_play && data_play.data && data_play.data.mp3) {
+        await conn.sendMessage(m.chat, { 
+            document: { url: data_play.data.mp3 }, 
+            mimetype: 'audio/mp3', 
+            fileName: `${videos.title}.mp3`
+        }, { quoted: m });
+
+        await m.react('✅'); 
+    } else {
+        //await m.reply("❌ No se pudo obtener el audio.");
+        await m.react('❌'); 
     }
 };
 
-handler.help = ['ytmp3 <link>'];
-handler.command = /^(ytmp3)$/i;
+handler.help = ['ytmp3doc <yt url>'];
 handler.tags = ['downloader'];
+handler.command = ['ytmp3doc'];
+handler.register = true;
 
 export default handler;
