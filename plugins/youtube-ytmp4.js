@@ -1,4 +1,4 @@
-import { ytmp4 } from '@StarlightsTeam/Scraper'
+import  ytmp4  from '@StarlightsTeam/Scraper'
 import fetch from 'node-fetch'
 let handler = async (m, { conn, args, text, usedPrefix, command }) => {
 if (!text) await m.reply('')
