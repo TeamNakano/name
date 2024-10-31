@@ -37,7 +37,7 @@ const handler = async (m, { text, usedPrefix, command, conn }) => {
 
     if (data_play && data_play.data && data_play.data.mp4) {
         const videoTitle = videos.title; // Título del video
-        const videoQuality = data_play.data.quality || 'alta'; 
+        const videoQuality = data_play.data.quality || 'auto'; 
         const caption = `✨ *Título:* ${videoTitle}\n💬 *Calidad:* ${videoQuality}`;
 
         await conn.sendMessage(m.chat, { 
