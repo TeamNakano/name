@@ -54,8 +54,8 @@ const defaultMenu = {
 
 \t\t\t*🅼 🅴 🅽 🆄 ➸ 🅲 🅾︎ 🅼 🅿︎ 🅻 🅴 🆃 🅾︎*
 `.trimStart(),
-  header:  ' ≈☆≈ [ ᪥ `M͜͡E͜͡N͜͡U͜͡ ✯ %category` ♡ ] ≈☆≈ \n│ ≈☆≈ ',
-  body:  '> 💖│%cmd %islimit %isPremium\n',
+  header:  ' ≈☆≈ [ 💞 `M͜͡E͜͡N͜͡U͜͡ ✯ %category` ♡ ] ≈☆≈ \n│ ≈☆≈ ',
+  body:  '> ᪥│%cmd %islimit %isPremium\n',
   footer: '│•——————•°•᪥•°•——————•···\n╰•——————•°•᪥•°•——————•═┅═•——————•°•᪥•°•——————•\n',
   after: `> 🚩 ${textbot}`,
 }
@@ -176,11 +176,11 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     let gifUrl = "https://files.catbox.moe/qodcee.mp4";await conn.sendMessage(m.chat, {video: {url: gifUrl}, gifPlayback: true, caption: text.trim(), mentions: [m.sender]}, {quoted: m});
     await m.react('💌')
    // await conn.sendMessage(m.chat, { video: { url: [pp, pp2, pp3, pp4, pp5, pp6, pp7, pp8, pp9, pp10, pp11, pp12, pp13, pp14, pp15].getRandom() }, gifPlayback: true, caption: text.trim(), mentions: [m.sender] }, { quoted: estilo })
-    await conn.sendFile(m.chat, img, 'thumbnail.mp4', text.trim(), m, null)
+    /*await conn.sendFile(m.chat, img, 'thumbnail.mp4', text.trim(), m, null)*/
    //await conn.sendAi(m.chat, botname, textbot, text.trim(), img, img, canal, estilo)
 
   } catch (e) {
-    conn.reply(m.chat, '╚═ ✰ ═ ✮ :𝑷𝒐𝒘𝒆𝒓𝒆𝒅 𝒃𝒚 : ᪥𝑻𝒆𝒂𝒎 𝑵𝒂𝒌𝒂𝒏𝒐: ✮ ═ ✰ ═╝ ', m)
+    conn.reply(m.chat, '', m)
     throw e
   }
 }
