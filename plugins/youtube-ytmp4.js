@@ -33,5 +33,5 @@ let handler = async (m, { conn, args, text, usedPrefix, command }) => {
 };
 
 // Configuración del comando
-handler.command = ['vid'];
+handler.command = ['ytmp4'];
 export default handler;
