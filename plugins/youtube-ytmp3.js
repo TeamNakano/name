@@ -1,39 +1,57 @@
-import ytdl from "ytdl-mp3";
+import yts from 'yt-search';
+import axios from 'axios';
+import fetch from "node-fetch";
 
-let handler = async (m, { conn, args }) => {
-    // Verificar si se proporcionó el enlace de YouTube
-    if (!args[0]) return conn.reply(m.chat, '🚩 Por favor, ingresa un enlace de YouTube válido.', m);
+const handler = async (m, { text, usedPrefix, command, conn }) => {
+    if (!text) {
+        throw m.reply("✨ Ingresa una consulta o link de *YouTube*");
+    }
+    await m.react('🕓');
+    
+    let res = await yts(text);
+    let videoList = res.all;
+    let videos = videoList[0];
 
-    await m.react('🕗'); // Reacción de espera
+    async function ytdl(url) {
+        const response = await fetch('https://shinoa.us.kg/api/download/ytdl', {
+            method: 'POST',
+            headers: {
+                'accept': '*/*',
+                'api_key': 'free',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: url
+            })
+        });
 
-    try {
-        // Obtener la información y descarga del audio en MP3
-        let data = await ytdl.ytdl(args[0]);
-
-        // Verificar si se obtuvo la URL de descarga
-        if (data && data.url) {
-            // Enviar el archivo MP3 como documento
-            await conn.sendMessage(m.chat, {
-                document: { url: data.url },
-                mimetype: 'audio/mpeg',
-                fileName: `${data.title}.mp3`,
-                contextInfo: { forwardingScore: 999, isForwarded: true } // Contexto de "reenviado muchas veces"
-            }, { quoted: m });
-
-            await m.react('✅'); // Reacción de éxito
-        } else {
-            await m.react('✖️'); // Reacción de error si no se encontró el enlace de descarga
-            conn.reply(m.chat, '🚩 No se pudo obtener el audio.', m);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    } catch (error) {
-        console.error(error);
-        await m.react('✖️'); // Reacción de error en caso de fallo
-        conn.reply(m.chat, '🚩 Error al procesar el audio de YouTube.', m);
+
+        const data = await response.json();
+        return data;
+    }
+
+    let data_play = await ytdl(videos.url);
+    console.log(data_play);
+
+    if (data_play && data_play.data && data_play.data.mp3) {
+        await conn.sendMessage(m.chat, { 
+            audio: { url: data_play.data.mp3 }, 
+            mimetype: 'audio/mp4',
+        }, { quoted: m });
+        
+        await m.react('✅'); 
+    } else {
+        //await m.reply("❌ No se pudo obtener el audio.");
+        await m.react('❌'); 
     }
 };
 
-// Configuración del comando
-handler.command = ['ytmp3'];
+handler.help = ['ytmp3 <yt url>'];
 handler.tags = ['downloader'];
-handler.help = ['ytmp3 <enlace>'];
+handler.command = ['ytmp3', 'yta'];
+handler.register = true;
+
 export default handler;
