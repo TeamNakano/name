@@ -1,36 +1,37 @@
+import { ytmp4 } from '@StarlightsTeam/Scraper';
 import fetch from 'node-fetch';
 
-let handler = async (m, { conn, args }) => {
-    if (!args[0]) return conn.reply(m.chat, '🚩 Por favor, ingresa un enlace de YouTube.', m);
-
-    await m.react('🕗');
+let handler = async (m, { conn, args, text, usedPrefix, command }) => {
+    // Verificar si el texto (enlace) fue proporcionado
+    if (!text) return await m.reply('🚩 Por favor, ingresa un enlace de YouTube válido.');
 
     try {
-        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}`;
-        let response = await fetch(url);
-        let json = await response.json();
+        await m.react("🕐"); // Reaccionar con reloj mientras se procesa
 
-        
-        if (json.status && json.result && json.result.mp4) {
-            let { title, mp4 } = json.result;
+        // Obtener URL de descarga y miniatura del video
+        const { dl_url, thumbnail } = await ytmp4(text);
 
-            
-            await conn.sendFile(m.chat, mp4, `${title}.mp4`, '', m);
-
-            await m.react('✅');
-        } else {
-            await conn.reply(m.chat, '🚩 No se pudo obtener el archivo de video.', m);
-            await m.react('❌');
+        // Verificar si la URL de descarga es válida
+        if (!dl_url) {
+            await m.react("✖️"); // Reacción en caso de error
+            return await m.reply('🚩 No se pudo obtener el enlace de descarga.');
         }
+
+        // Enviar el video como mensaje con miniatura y contexto
+        await conn.sendMessage(m.chat, {
+            video: { url: dl_url },
+            caption: '\n*𝑈𝑊-BOT*',
+            thumbnail: thumbnail ? await fetch(thumbnail).then(res => res.buffer()) : null
+        }, { quoted: m });
+
+        await m.react("✅"); // Reacción de éxito
     } catch (error) {
         console.error(error);
-        await conn.reply(m.chat, '🚩 Ocurrió un error al procesar tu solicitud.', m);
-        await m.react('❌');
+        await m.react("✖️"); // Reacción en caso de error
+        await m.reply('🚩 Ocurrió un error al procesar el video de YouTube.');
     }
 };
 
-handler.help = ['ytmp4 <link>'];
-handler.command = /^(ytmp4)$/i; 
-handler.tags = ['downloader'];
-
+// Configuración del comando
+handler.command = ['vid'];
 export default handler;
