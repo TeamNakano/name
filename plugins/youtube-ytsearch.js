@@ -1,5 +1,6 @@
+
 import { prepareWAMessageMedia, generateWAMessageFromContent, getDevice } from '@whiskeysockets/baileys';
-import yts from 'yt-search';
+import axios from 'axios';
 
 const handler = async (m, { conn, text, usedPrefix, command, args }) => {
     const device = await getDevice(m.key.id);
@@ -8,10 +9,12 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
     
     await m.react('🕗');
     
-    const results = await yts(text);
-    const videos = results.videos.slice(0, 30);
+    
+    const response = await axios.get(`https://deliriussapi-oficial.vercel.app/search/ytsearch?q=${encodeURIComponent(text)}`);
+    const results = response.data;
 
-    if (videos.length === 0) {
+   
+    if (!results.status || !results.data || results.data.length === 0) {
         await m.react('❌');
         return m.reply(`❌ Lo siento, no encontré resultados para *${text}*. Intenta con otro término de búsqueda.`);
     }
@@ -19,14 +22,24 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
     await m.react('✅');
 
     
-    var mediaMessage = await prepareWAMessageMedia({ image: { url: 'https://qu.ax/fPmDc.jpg' } }, { upload: conn.waUploadToServer });
+    const firstVideo = results.data[0];
+    const firstVideoInfo = `
+*✨ Primer Resultado de Búsqueda:*
+*📌 Título:* ${firstVideo.title}
+*📅 Publicado:* ${firstVideo.publishedAt}
+*🕗 Duración:* ${firstVideo.duration}
+*👁️ Vistas:* ${firstVideo.views}
+*💬 Enlace:* ${firstVideo.url}
+`.trim();
 
     
+    var mediaMessage = await prepareWAMessageMedia({ image: { url: 'https://qu.ax/rLO.jpg' } }, { upload: conn.waUploadToServer });
+
     const interactiveMessage = {
         body: { 
-            text: `Resultados de: *${text}*`,  
+            text: `${firstVideoInfo}\n\nResultados de: *${text}*`,  
         },
-        footer: { text: 'Powered by Nakano' },  
+        footer: { text: '✨ Powered by Team Nakano' },  
         header: {
             title: `*乂  Y T  -  S E A R C H 💞*`,
             hasMediaAttachment: true,
@@ -37,32 +50,32 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
                 {
                     name: 'single_select',
                     buttonParamsJson: JSON.stringify({
-                        title: 'Seleccione un video',
-                        sections: videos.map((video) => ({
-                            title: video.title,
+                        title: 'Mas resultados',
+                        sections: results.data.map((video) => ({
+                            title: `${video.title}`,
                             rows: [
                                 {
-                                    header: video.title,
-                                    title: 'MP3',
-                                    description: 'Descargar como MP3',
+                                    header: `✨ ${video.title}`,
+                                    title: `💬 ${video.url}`,  
+                                    description: '🎧 Descargar como MP3',
                                     id: `${usedPrefix}ytmp3 ${video.url}`
                                 },
                                 {
-                                    header: video.title,
-                                    title: 'MP3DOC',
-                                    description: 'Descargar MP3 (como documento)',
+                                    header: `✨ ${video.title}`,
+                                    title: `💬 ${video.url}`,  
+                                    description: '📄 Descargar MP3 (documento)',
                                     id: `${usedPrefix}ytmp3doc ${video.url}`
                                 },
                                 {
-                                    header: video.title,
-                                    title: 'MP4',
-                                    description: 'Descargar como MP4',
+                                    header: `✨ ${video.title}`,
+                                    title: `💬 ${video.url}`,  
+                                    description: '🎬 Descargar como MP4',
                                     id: `${usedPrefix}ytmp4 ${video.url}`
                                 },
                                 {
-                                    header: video.title,
-                                    title: 'MP4DOC',
-                                    description: 'Descargar MP4 (como documento)',
+                                    header: `✨ ${video.title}`,
+                                    title: `💬 ${video.url}`,  
+                                    description: '📄 Descargar MP4 (documento)',
                                     id: `${usedPrefix}ytmp4doc ${video.url}`
                                 }
                             ]
@@ -74,7 +87,6 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
         }
     };
 
-    
     let msg = generateWAMessageFromContent(m.chat, {
         viewOnceMessage: {
             message: {
