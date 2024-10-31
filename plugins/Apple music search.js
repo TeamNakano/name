@@ -1,3 +1,7 @@
+
+
+
+
 import fetch from 'node-fetch';
 import { getDevice } from '@whiskeysockets/baileys';
 
@@ -24,11 +28,11 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
       const track = results[i];
       
       listSections.push({
-        title: '',
+        title: `Canción Nro ${i + 1}`,
         rows: [
           {
             header: '',
-            title: `Nro ${i + 1} - ${track.title}\n`,
+            title: `${track.title}\n`,
             description: `Artista: ${track.artists}`,
             id: `${usedPrefix}applemusicdl ${track.url}`
           },
@@ -42,7 +46,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
       ' *A P P L E  M U S I C  -  S E A R C H* 💬',
       firstTrackInfo, 
       'Seleccione una Canción',
-      'https://qu.ax/fPmDc.jpg',
+      'https://qu.ax/bwucx.jpg',
       listSections,
       m
     );
