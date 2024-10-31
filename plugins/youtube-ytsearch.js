@@ -1,4 +1,3 @@
-
 import { prepareWAMessageMedia, generateWAMessageFromContent, getDevice } from '@whiskeysockets/baileys';
 import axios from 'axios';
 
@@ -9,11 +8,11 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
     
     await m.react('🕗');
     
-    
+    // Realiza la búsqueda en la API de YouTube
     const response = await axios.get(`https://deliriussapi-oficial.vercel.app/search/ytsearch?q=${encodeURIComponent(text)}`);
     const results = response.data;
 
-   
+    // Verifica que la respuesta contenga videos
     if (!results.status || !results.data || results.data.length === 0) {
         await m.react('❌');
         return m.reply(`❌ Lo siento, no encontré resultados para *${text}*. Intenta con otro término de búsqueda.`);
@@ -21,7 +20,7 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
 
     await m.react('✅');
 
-    
+    // Detalles del primer video para incluirlos en el menú selectivo
     const firstVideo = results.data[0];
     const firstVideoInfo = `
 *✨ Primer Resultado de Búsqueda:*
@@ -52,30 +51,30 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
                     buttonParamsJson: JSON.stringify({
                         title: 'Mas resultados',
                         sections: results.data.map((video) => ({
-                            title: `${video.title}`,
+                            title: `${video.title}`, highlight_label: `${video.duration}`, 
                             rows: [
                                 {
-                                    header: `✨ ${video.title}`,
-                                    title: `💬 ${video.url}`,  
-                                    description: '🎧 Descargar como MP3',
+                                    header: `✨ Duracion: ${video.duration}`,
+                                    title: '🎧 Descargar como MP3',  
+                                    description: `💬 Url: ${video.url}`,  
                                     id: `${usedPrefix}ytmp3 ${video.url}`
                                 },
                                 {
-                                    header: `✨ ${video.title}`,
-                                    title: `💬 ${video.url}`,  
-                                    description: '📄 Descargar MP3 (documento)',
+                                    header: `✨ Duracion: ${video.duration}`,
+                                    title: '📄 Descargar MP3 (documento)', 
+                                    description: `💬 Url: ${video.url}`,  
                                     id: `${usedPrefix}ytmp3doc ${video.url}`
                                 },
                                 {
-                                    header: `✨ ${video.title}`,
-                                    title: `💬 ${video.url}`,  
-                                    description: '🎬 Descargar como MP4',
+                                    header: `✨ Duracion: ${video.duration}`,
+                                    title: '🎬 Descargar como MP4',  
+                                    description: `💬 Url: ${video.url}`,  
                                     id: `${usedPrefix}ytmp4 ${video.url}`
                                 },
                                 {
-                                    header: `✨ ${video.title}`,
-                                    title: `💬 ${video.url}`,  
-                                    description: '📄 Descargar MP4 (documento)',
+                                    header: `✨ Duracion: ${video.duration}`,
+                                    title: '📄 Descargar MP4 (documento)',  
+                                    description: `💬 Url: ${video.url}`,  
                                     id: `${usedPrefix}ytmp4doc ${video.url}`
                                 }
                             ]
