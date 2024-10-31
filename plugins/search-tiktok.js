@@ -21,14 +21,14 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
 
     
     listSections.push({
-      title: `✨ **Primer resultado:**`,
+      title: `✨ **Primer resultado:**`, highlight_label: 'Popular',
       rows: [
         {
           header: '',
           title: `⭐ ${firstVideo.title} `,
           description: `👤 Autor: ${firstVideo.author}\n💬 Url: ${firstVideo.url}`,
           id: `${usedPrefix}tiktok ${firstVideo.url}`,
-          highlight_label: 'Popular' // Etiqueta verde
+         
         }
       ]
     });
