@@ -48,7 +48,7 @@
 		"awesome-phonenumber": "^6.4.0",
 		"fluid-spotify.js": "*",
 		"axios": "*",
-		"ytdl-mp3": "github:HanSamu-27/ytdl-mp3"
+		"ytdl-mp3": "github:HanSamu-27/ytdl-mp3",
 		"aptoide-scraper": "*",
 		"api-dylux": "*",
 		"brainly-scraper-v2": "^2.2.8",
