@@ -39,7 +39,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
     }
 
     
-    await conn.sendList(m.chat, txt + '*> _💞 Powered by Team Nakano*', '', 'Mas Resultados', 'https://qu.ax/pvdyg.jpg', listSections, m);
+    await conn.sendList(m.chat, txt + '', '', 'Mas Resultados', 'https://qu.ax/pvdyg.jpg', listSections, m);
     await m.react('✅'); 
   } catch (error) {
     console.error(error);
