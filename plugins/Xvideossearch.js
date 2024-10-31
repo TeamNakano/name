@@ -33,7 +33,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
         }
 
         
-        const imageUrl = 'https://qu.ax/fPmDc.jpg';
+        const imageUrl = 'https://qu.ax/cPYzf.jpg';
 
         
         await conn.sendList(
