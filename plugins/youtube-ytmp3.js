@@ -1,37 +1,39 @@
-import fetch from 'node-fetch';
+import ytdl from "ytdl-mp3";
 
 let handler = async (m, { conn, args }) => {
-    if (!args[0]) return conn.reply(m.chat, '🚩 Por favor, ingresa un enlace de YouTube.', m);
+    // Verificar si se proporcionó el enlace de YouTube
+    if (!args[0]) return conn.reply(m.chat, '🚩 Por favor, ingresa un enlace de YouTube válido.', m);
 
-    await m.react('🕗');
+    await m.react('🕗'); // Reacción de espera
 
     try {
-        
-        let url = `https://widipe.com/download/ytdl?url=${encodeURIComponent(args[0])}`;
-        let response = await fetch(url);
-        let json = await response.json();
+        // Obtener la información y descarga del audio en MP3
+        let data = await ytdl.ytdl(args[0]);
 
-        
-        if (json.status && json.result && json.result.mp3) {
-            let { title, mp3 } = json.result;
+        // Verificar si se obtuvo la URL de descarga
+        if (data && data.url) {
+            // Enviar el archivo MP3 como documento
+            await conn.sendMessage(m.chat, {
+                document: { url: data.url },
+                mimetype: 'audio/mpeg',
+                fileName: `${data.title}.mp3`,
+                contextInfo: { forwardingScore: 999, isForwarded: true } // Contexto de "reenviado muchas veces"
+            }, { quoted: m });
 
-            
-            await conn.sendFile(m.chat, mp3, `${title}.mp3`, '', m, false, { mimetype: 'audio/mpeg' });
-
-            await m.react('✅');
+            await m.react('✅'); // Reacción de éxito
         } else {
-            await conn.reply(m.chat, '🚩 No se pudo obtener el archivo de audio.', m);
-            await m.react('❌');
+            await m.react('✖️'); // Reacción de error si no se encontró el enlace de descarga
+            conn.reply(m.chat, '🚩 No se pudo obtener el audio.', m);
         }
     } catch (error) {
         console.error(error);
-        await conn.reply(m.chat, '🚩 Ocurrió un error al procesar tu solicitud.', m);
-        await m.react('❌');
+        await m.react('✖️'); // Reacción de error en caso de fallo
+        conn.reply(m.chat, '🚩 Error al procesar el audio de YouTube.', m);
     }
 };
 
-handler.help = ['ytmp3 <link>'];
-handler.command = /^(ytmp3)$/i;
+// Configuración del comando
+handler.command = ['ytmp3'];
 handler.tags = ['downloader'];
-
+handler.help = ['ytmp3 <enlace>'];
 export default handler;
