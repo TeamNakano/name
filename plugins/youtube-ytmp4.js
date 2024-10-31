@@ -1,47 +1,61 @@
-import { ytmp4 } from '@StarlightsTeam/Scraper';
-import fetch from 'node-fetch';
+import yts from 'yt-search';
+import fetch from "node-fetch";
 
-let handler = async (m, { conn, args, text }) => {
+const handler = async (m, { text, usedPrefix, command, conn }) => {
+    if (!text) {
+        throw await m.reply("✨ Ingresa una consulta o link de *YouTube*");
+    }
+    await m.react('🕓');
     
-    if (!text) return await m.reply('🚩 Por favor, ingresa un enlace de YouTube válido.');
+    let res = await yts(text);
+    let videoList = res.all;
+    let videos = videoList[0];
 
-    try {
-        await m.react("🕐"); 
+    async function ytdl(url) {
+        const response = await fetch('https://shinoa.us.kg/api/download/ytdl', {
+            method: 'POST',
+            headers: {
+                'accept': '*/*',
+                'api_key': 'free',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: url
+            })
+        });
 
-        
-        const { title, size, quality, thumbnail, dl_url } = await ytmp4(text);
-
-        
-        if (!dl_url) {
-            await m.react("✖️"); 
-            return await m.reply('🚩 No se pudo obtener el enlace de descarga.');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        
-        const videoSize = parseFloat(size) || 0;
-        if (videoSize > 1000) {
-            await m.react("⚠️");
-            return await m.reply(`🚩 El archivo es demasiado grande para enviarlo (máximo 1 GB). Tamaño: ${size} MB`);
-        }
+        const data = await response.json();
+        return data;
+    }
 
-        
-        await conn.sendMessage(m.chat, {
-            document: { url: dl_url },
+    let data_play = await ytdl(videos.url);
+    console.log(data_play);
+
+    if (data_play && data_play.data && data_play.data.mp4) {
+        const videoTitle = videos.title; // Título del video
+        const videoQuality = data_play.data.quality || 'alta'; 
+        const caption = `✨ *Título:* ${videoTitle}\n💬 *Calidad:* ${videoQuality}`;
+
+        await conn.sendMessage(m.chat, { 
+            video: { url: data_play.data.mp4 }, 
             mimetype: 'video/mp4',
-            fileName: `${title}.mp4`,
-            caption: `🎬 *${title}*\n📏 *Tamaño:* ${size} MB\n🔍 *Calidad:* ${quality}`,
-            thumbnail: thumbnail ? await fetch(thumbnail).then(res => res.buffer()) : null
+            caption: caption 
         }, { quoted: m });
-
-        await m.react("✅"); // Reacción de éxito
-    } catch (error) {
-        console.error(error);
-        await m.react("✖️"); 
-        //await m.reply('🚩 Ocurrió un error al procesar el video de YouTube.');
+        
+        await m.react('✅'); 
+    } else {
+        await m.reply("❌ No se pudo obtener el video.");
+        await m.react('❌'); 
     }
 };
 
-
+handler.help = ['ytmp4 <yt url>'];
+handler.tags = ['downloader'];
 handler.command = ['ytmp4'];
+handler.register = true;
 
 export default handler;
