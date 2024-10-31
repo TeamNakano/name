@@ -19,9 +19,9 @@ let handler = async (m, { conn, args, text }) => {
 
         
         const videoSize = parseFloat(size) || 0;
-        if (videoSize > 130) {
+        if (videoSize > 1000) {
             await m.react("⚠️");
-            return await m.reply(`🚩 El archivo es demasiado grande para enviarlo (máximo 130 MB). Tamaño: ${size} MB`);
+            return await m.reply(`🚩 El archivo es demasiado grande para enviarlo (máximo 1 GB). Tamaño: ${size} MB`);
         }
 
         
@@ -43,4 +43,5 @@ let handler = async (m, { conn, args, text }) => {
 
 
 handler.command = ['ytmp4'];
+
 export default handler;
