@@ -28,7 +28,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
             });
         }
 
-        const imageUrl = 'https://qu.ax/fPmDc.jpg';
+        const imageUrl = 'https://qu.ax/qQcNT.jpg';
 
         
         await conn.sendList(m.chat, '*XNXX  - SEARCH*\n\n> _Powered by Nakano Team_', `Resultados de:\n*${text.toUpperCase()}*`, 'Seleccione un vídeo', imageUrl, xnxx, m);
