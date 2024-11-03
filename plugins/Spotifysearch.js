@@ -1,15 +1,18 @@
 import fetch from 'node-fetch';
-import Starlights from '@StarlightsTeam/Scraper';
 import { getDevice } from '@whiskeysockets/baileys';
 
 let handler = async (m, { conn, command, text, usedPrefix }) => {
   if (!text) return conn.reply(m.chat, 'Ingresa el texto de lo que quieras buscar', m);
 
-  await m.react('🕓'); 
+  await m.react('🕓');
 
   const deviceType = await getDevice(m.key.id);
   try {
-    let results = await Starlights.spotifySearch(text);
+    
+    let response = await fetch(`https://deliriussapi-oficial.vercel.app/search/spotify?q=${encodeURIComponent(text)}&limit=20`);
+    let data = await response.json();
+    let results = data.data;
+
     if (!results || results.length === 0) return conn.reply(m.chat, 'No se encontraron resultados', m);
 
     
@@ -26,11 +29,10 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
     for (let i = 1; i < (results.length >= 30 ? 30 : results.length); i++) {
       const track = results[i];
       listSections.push({
-        title: `Canción Nro ${i + 1}`,
+        title: `Canción Nro ${i + 1}`,highlight_label: `${track.duration}`,
         rows: [
           {
-            header: '',
-            title: `${track.title}\n`,
+            title: `${track.title}`,
             description: `Artista: ${track.artist}`,
             id: `${usedPrefix}spotifydl ${track.url}`
           }
@@ -39,7 +41,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
     }
 
     
-    await conn.sendList(m.chat, txt + '', '', 'Mas Resultados', 'https://qu.ax/pvdyg.jpg', listSections, m);
+    await conn.sendList(m.chat, txt + '*💞 Powered by Team Nakano*', '', 'Mas Resultados', firstTrack.image, listSections, m);
     await m.react('✅'); 
   } catch (error) {
     console.error(error);
