@@ -8,11 +8,11 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
     
     await m.react('🕗');
     
-    // Realiza la búsqueda en la API de YouTube
+    
     const response = await axios.get(`https://deliriussapi-oficial.vercel.app/search/ytsearch?q=${encodeURIComponent(text)}`);
     const results = response.data;
 
-    // Verifica que la respuesta contenga videos
+    
     if (!results.status || !results.data || results.data.length === 0) {
         await m.react('❌');
         return m.reply(`❌ Lo siento, no encontré resultados para *${text}*. Intenta con otro término de búsqueda.`);
@@ -20,7 +20,7 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
 
     await m.react('✅');
 
-    // Detalles del primer video para incluirlos en el menú selectivo
+    // Editar tecto no la sintaxis 
     const firstVideo = results.data[0];
     const firstVideoInfo = `
 *✨ Primer Resultado de Búsqueda:*
