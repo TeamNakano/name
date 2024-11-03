@@ -1,7 +1,3 @@
-
-
-
-
 import fetch from 'node-fetch';
 import { getDevice } from '@whiskeysockets/baileys';
 
@@ -20,7 +16,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
     const firstTrackInfo = `✨ *Primer Resultado* ✨\n\n` +
                            `*» Título* : ${firstTrack.title}\n` +
                            `*» Artista* : ${firstTrack.artists}\n` +
-                           `*» Duración* : ${firstTrack.duration}\n\n`;
+                           `*» Url* : ${firstTrack.url}\n\n`;
 
     
     let listSections = [];
@@ -28,7 +24,7 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
       const track = results[i];
       
       listSections.push({
-        title: `Canción Nro ${i + 1}`,
+        title: `Canción Nro ${i + 1}`, highlight_label: `${track.type}`,
         rows: [
           {
             header: '',
@@ -43,9 +39,9 @@ let handler = async (m, { conn, command, text, usedPrefix }) => {
     
     await conn.sendList(
       m.chat,
-      ' *A P P L E  M U S I C  -  S E A R C H* 💬',
+      ' *A P P L E  M U S I C* 💬',
       firstTrackInfo, 
-      'Seleccione una Canción',
+      'Mas resultados',
       'https://qu.ax/bwucx.jpg',
       listSections,
       m
