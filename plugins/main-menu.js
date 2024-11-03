@@ -54,8 +54,8 @@ const defaultMenu = {
 
 \t\t\t*🅼 🅴 🅽 🆄 ➸ 🅲 🅾︎ 🅼 🅿︎ 🅻 🅴 🆃 🅾︎*
 `.trimStart(),
-  header:  ' ≈☆≈ [ 💞 `M͜͡E͜͡N͜͡U͜͡ ✯ %category` ♡ ] ≈☆≈ \n│ ≈☆≈ ',
-  body:  '> ᪥│%cmd %islimit %isPremium\n',
+  header:  ' ≈☆≈ [ ᪥ `M͜͡E͜͡N͜͡U͜͡ ✯ %category` ♡ ] ≈☆≈ \n│ ≈☆≈ ',
+  body:  '> 💖│%cmd %islimit %isPremium\n',
   footer: '│•——————•°•᪥•°•——————•···\n╰•——————•°•᪥•°•——————•═┅═•——————•°•᪥•°•——————•\n',
   after: `> 🚩 ${textbot}`,
 }
@@ -180,7 +180,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
    //await conn.sendAi(m.chat, botname, textbot, text.trim(), img, img, canal, estilo)
 
   } catch (e) {
-    conn.reply(m.chat, '', m)
+    conn.reply(m.chat, '╚═ ✰ ═ ✮ :𝑷𝒐𝒘𝒆𝒓𝒆𝒅 𝒃𝒚 : ᪥𝑻𝒆𝒂𝒎 𝑵𝒂𝒌𝒂𝒏𝒐: ✮ ═ ✰ ═╝ ', m)
     throw e
   }
 }
